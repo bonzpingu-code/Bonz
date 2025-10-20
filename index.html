@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Quiz Challenge</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Family Quiz Challenge</h1>
+            <p>Test your knowledge and have fun with the whole family!</p>
+            <div class="score-display">Score: <span id="score">0</span></div>
+        </header>
+        
+        <div class="admin-panel">
+            <div class="admin-controls">
+                <button id="admin-login">Admin Login</button>
+                <button id="start-game" class="btn-secondary">Start Game</button>
+                <button id="host-game" class="btn-success">Host Game</button>
+                <button id="reset-game" class="btn-danger">Reset Game</button>
+            </div>
+            <div class="player-info">
+                Player: <span id="player-name">Guest</span>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Welcome Screen -->
+            <div id="welcome-screen" class="welcome-section">
+                <h2>Welcome to Family Quiz Challenge!</h2>
+                <p>Test your knowledge across various topics in this fun family quiz game. Answer questions correctly to earn points and climb the leaderboard!</p>
+                <div class="form-group">
+                    <label for="player-name-input">Enter Your Name:</label>
+                    <input type="text" id="player-name-input" placeholder="Your name">
+                </div>
+                <button id="play-game">Let's Play!</button>
+                
+                <div class="leaderboard">
+                    <h3>Family Leaderboard</h3>
+                    <ul id="leaderboard-list" class="leaderboard-list">
+                        <!-- Leaderboard items will be populated by JavaScript -->
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Question Section -->
+            <div id="question-section" class="question-section hidden">
+                <div class="question-header">
+                    <div class="question-counter">Question <span id="current-question">1</span> of <span id="total-questions">0</span></div>
+                    <div id="timer" class="timer">30s</div>
+                </div>
+                <p id="question"></p>
+                <ul id="options"></ul>
+            </div>
+            
+            <!-- Result Section -->
+            <div id="result-section" class="result-section hidden">
+                <p id="result"></p>
+                <button id="next-question">Next Question</button>
+            </div>
+            
+            <!-- Game Over Section -->
+            <div id="game-over" class="game-over hidden">
+                <h2>Game Over!</h2>
+                <div class="player-name">Well done, <span id="final-player-name">Player</span>!</div>
+                <div class="final-score">Final Score: <span id="final-score">0</span></div>
+                <button id="play-again">Play Again</button>
+                
+                <div class="share-section">
+                    <h3>Share Your Score</h3>
+                    <div class="share-buttons">
+                        <button id="share-whatsapp" class="btn-secondary">WhatsApp</button>
+                        <button id="share-facebook" class="btn-secondary">Facebook</button>
+                        <button id="copy-link" class="btn-secondary">Copy Link</button>
+                    </div>
+                </div>
+                
+                <div class="leaderboard">
+                    <h3>Family Leaderboard</h3>
+                    <ul id="final-leaderboard" class="leaderboard-list">
+                        <!-- Leaderboard items will be populated by JavaScript -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="modal">
+        <div class="modal-content">
+            <h2>Admin Login</h2>
+            <div class="form-group">
+                <label for="admin-password">Password:</label>
+                <input type="password" id="admin-password" placeholder="Enter admin password">
+            </div>
+            <button id="login-submit">Login</button>
+            <button id="login-cancel" class="btn-secondary">Cancel</button>
+        </div>
+    </div>
+    
+    <!-- Admin Dashboard Modal -->
+    <div id="admin-dashboard-modal" class="modal">
+        <div class="modal-content">
+            <h2>Admin Dashboard</h2>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="hosting">Hosting</div>
+                <div class="tab" data-tab="questions">Questions</div>
+                <div class="tab" data-tab="categories">Categories</div>
+                <div class="tab" data-tab="settings">Settings</div>
+                <div class="tab" data-tab="parental">Parental Controls</div>
+            </div>
+            
+            <div class="tab-container">
+                <!-- Hosting Tab -->
+                <div id="hosting-tab" class="tab-content active">
+                    <div class="settings-grid">
+                        <div class="setting-card">
+                            <h3>Game Session</h3>
+                            <div class="form-group">
+                                <label for="session-name">Session Name:</label>
+                                <input type="text" id="session-name" placeholder="Family Game Night">
+                            </div>
+                            <div class="form-group">
+                                <label for="session-code">Session Code:</label>
+                                <div class="session-code" id="session-code-display">FAM-1234</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="max-players">Max Players:</label>
+                                <input type="number" id="max-players" min="1" max="20" value="8">
+                            </div>
+                            <div class="host-controls">
+                                <button id="start-session" class="btn-success">Start Session</button>
+                                <button id="stop-session" class="btn-danger">Stop Session</button>
+                                <button id="generate-qr" class="btn-secondary">Generate QR Code</button>
+                            </div>
+                            
+                            <div class="qr-code hidden" id="qr-code-container">
+                                <h4>Scan to Join</h4>
+                                <div id="qr-code"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-card">
+                            <h3>Game Settings</h3>
+                            <div class="form-group">
+                                <label for="question-timer">Question Timer (seconds):</label>
+                                <input type="number" id="question-timer" min="5" max="120" value="30">
+                            </div>
+                            <div class="form-group">
+                                <label for="questions-per-game">Questions Per Game:</label>
+                                <input type="number" id="questions-per-game" min="1" max="50" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label for="game-difficulty">Default Difficulty:</label>
+                                <select id="game-difficulty">
+                                    <option value="mixed">Mixed</option>
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="game-categories">Categories:</label>
+                                <div id="game-categories">
+                                    <!-- Categories will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-session-info">
+                        <h3>Active Session Info</h3>
+                        <div id="session-status">No active session</div>
+                        <div id="connected-players">
+                            <h4>Connected Players (0)</h4>
+                            <ul id="players-list"></ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Questions Tab -->
+                <div id="questions-tab" class="tab-content">
+                    <div class="filter-controls">
+                        <div class="form-group">
+                            <label for="filter-category">Filter by Category:</label>
+                            <select id="filter-category">
+                                <option value="all">All Categories</option>
+                                <!-- Categories will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-difficulty">Filter by Difficulty:</label>
+                            <select id="filter-difficulty">
+                                <option value="all">All Difficulties</option>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                        <button id="apply-filters" class="btn-secondary">Apply Filters</button>
+                        <button id="add-new-question" class="btn-success">Add New Question</button>
+                    </div>
+                    
+                    <div class="question-list">
+                        <h3>Question Bank</h3>
+                        <div id="question-list-container">
+                            <!-- Questions will be listed here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Categories Tab -->
+                <div id="categories-tab" class="tab-content">
+                    <div class="form-group">
+                        <label for="new-category">Add New Category:</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="new-category" placeholder="Category name">
+                            <button id="add-category" class="btn-success">Add Category</button>
+                        </div>
+                    </div>
+                    
+                    <div class="question-list">
+                        <h3>Existing Categories</h3>
+                        <div id="categories-list">
+                            <!-- Categories will be listed here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Tab -->
+                <div id="settings-tab" class="tab-content">
+                    <div class="settings-grid">
+                        <div class="setting-card">
+                            <h3>Game Settings</h3>
+                            <div class="form-group">
+                                <label for="admin-password-change">Change Admin Password:</label>
+                                <input type="password" id="admin-password-change" placeholder="New password">
+                            </div>
+                            <div class="form-group">
+                                <label for="default-player-name">Default Player Name:</label>
+                                <input type="text" id="default-player-name" placeholder="Guest">
+                            </div>
+                            <div class="form-group">
+                                <label for="leaderboard-size">Leaderboard Size:</label>
+                                <input type="number" id="leaderboard-size" min="5" max="50" value="10">
+                            </div>
+                            <button id="save-settings" class="btn-success">Save Settings</button>
+                        </div>
+                        
+                        <div class="setting-card">
+                            <h3>Appearance</h3>
+                            <div class="form-group">
+                                <label for="theme-select">Theme:</label>
+                                <select id="theme-select">
+                                    <option value="default">Default</option>
+                                    <option value="dark">Dark Mode</option>
+                                    <option value="colorful">Colorful</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="font-size">Font Size:</label>
+                                <select id="font-size">
+                                    <option value="small">Small</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="large">Large</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="animation-speed">Animation Speed:</label>
+                                <select id="animation-speed">
+                                    <option value="slow">Slow</option>
+                                    <option value="normal" selected>Normal</option>
+                                    <option value="fast">Fast</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Parental Controls Tab -->
+                <div id="parental-tab" class="tab-content">
+                    <div class="parental-controls">
+                        <h3>Content Restrictions</h3>
+                        <p>Use these settings to control the type of content that can be accessed in the game.</p>
+                    </div>
+                    
+                    <div class="settings-grid">
+                        <div class="setting-card">
+                            <h3>Content Filtering</h3>
+                            <div class="form-group">
+                                <label style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span>Enable Content Filtering</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="content-filtering">
+                                        <span class="slider"></span>
+                                    </label>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="allowed-categories">Allowed Categories:</label>
+                                <div id="allowed-categories">
+                                    <!-- Categories will be populated by JavaScript -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="max-difficulty">Maximum Difficulty:</label>
+                                <select id="max-difficulty">
+                                    <option value="easy">Easy Only</option>
+                                    <option value="medium">Easy & Medium</option>
+                                    <option value="hard">All Levels</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-card">
+                            <h3>Time Limits</h3>
+                            <div class="form-group">
+                                <label style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span>Enable Time Limits</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="time-limits">
+                                        <span class="slider"></span>
+                                    </label>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="daily-limit">Daily Play Time (minutes):</label>
+                                <input type="number" id="daily-limit" min="0" max="240" value="60">
+                            </div>
+                            <div class="form-group">
+                                <label for="session-limit">Session Time (minutes):</label>
+                                <input type="number" id="session-limit" min="5" max="120" value="30">
+                            </div>
+                            <div class="form-group">
+                                <label for="bedtime-start">Bedtime Start:</label>
+                                <input type="time" id="bedtime-start" value="21:00">
+                            </div>
+                            <div class="form-group">
+                                <label for="bedtime-end">Bedtime End:</label>
+                                <input type="time" id="bedtime-end" value="07:00">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-card">
+                        <h3>Privacy & Sharing</h3>
+                        <div class="form-group">
+                            <label style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Allow Score Sharing</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="allow-sharing" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Show Player Names on Leaderboard</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="show-names" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label style="display: flex; justify-content: space-between; align-items: center;">
+                                <span>Require Parent Approval for New Players</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="require-approval">
+                                    <span class="slider"></span>
+                                </label>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button id="save-parental-controls" class="btn-success">Save Parental Controls</button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <button id="close-admin-dashboard" class="btn-secondary">Close Dashboard</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Question Modal -->
+    <div id="add-question-modal" class="modal">
+        <div class="modal-content">
+            <h2>Add New Question</h2>
+            <div class="form-group">
+                <label for="question-text">Question:</label>
+                <textarea id="question-text" placeholder="Enter your question" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category">
+                    <!-- Categories will be populated by JavaScript -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="difficulty">Difficulty:</label>
+                <select id="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="option1">Option 1 (Correct Answer):</label>
+                <input type="text" id="option1" placeholder="Option 1">
+            </div>
+            <div class="form-group">
+                <label for="option2">Option 2:</label>
+                <input type="text" id="option2" placeholder="Option 2">
+            </div>
+            <div class="form-group">
+                <label for="option3">Option 3:</label>
+                <input type="text" id="option3" placeholder="Option 3">
+            </div>
+            <div class="form-group">
+                <label for="option4">Option 4:</label>
+                <input type="text" id="option4" placeholder="Option 4">
+            </div>
+            <div class="form-group">
+                <label for="explanation">Explanation (Optional):</label>
+                <textarea id="explanation" placeholder="Explain why this is the correct answer" rows="2"></textarea>
+            </div>
+            <button id="save-question" class="btn-success">Save Question</button>
+            <button id="cancel-question" class="btn-secondary">Cancel</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
